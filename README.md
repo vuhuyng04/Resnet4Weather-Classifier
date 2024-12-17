@@ -1,3 +1,3 @@
 # weather-classifier
 
-![alt text](image.png)
+![alt text](demo.png)
