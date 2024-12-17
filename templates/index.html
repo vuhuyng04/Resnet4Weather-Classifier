@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Classifier</title>
+    
+    <!-- Sử dụng Bootstrap để làm đẹp giao diện -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .card-img-top {
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        #prediction {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center">Weather Classifier</h1>
+    
+    <!-- Form upload ảnh -->
+    <form id="upload-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Upload an image:</label>
+            <input type="file" class="form-control" name="file" id="file" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Predict</button>
+    </form>
+
+    <!-- Kết quả dự đoán -->
+    <div id="result" class="result" style="display:none;">
+        <h3>Prediction Result</h3>
+        <h4 id="prediction"></h4>
+        <img id="image-preview" class="card-img-top" alt="Image Preview">
+    </div>
+</div>
+
+<!-- Thêm jQuery và Bootstrap JS cho xử lý AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Xử lý sự kiện submit form
+        $('#upload-form').on('submit', function(e) {
+            e.preventDefault();  // Ngừng hành động mặc định
+
+            var formData = new FormData(this);  // Lấy dữ liệu form
+
+            // Gửi yêu cầu AJAX để dự đoán
+            $.ajax({
+                url: '/predict',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // Hiển thị kết quả dự đoán
+                    $('#result').show();
+                    $('#prediction').text(response.prediction);
+                    
+                    // Hiển thị ảnh người dùng đã tải lên
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#image-preview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL($('#file')[0].files[0]);
+                },
+                error: function(xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
